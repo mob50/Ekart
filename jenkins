@@ -1,0 +1,186 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven3'
+        jdk 'jdk17'
+    }
+    
+    environment{
+        SCANNER_HOME=tool 'sonar-tool'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main',url: 'https://github.com/mob50/Ekart.git'
+            }
+        }
+        
+        
+        stage('Compile') {
+            steps {
+                sh 'mvn compile -DskipTests=true'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'mvn test -DskipTests=true'
+            }
+        }
+        
+        
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=EKART -Dsonar.projectName=EKART  \
+                    -Dsonar.java.binaries=.'''
+}
+            }
+        }
+        
+        
+         stage('Dependency-Check') {
+            steps {
+                dependencyCheck additionalArguments: ' --scan ./', odcInstallation: 'dp'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+        
+        
+        stage('Build') {
+            steps {
+                sh 'mvn package -DskipTests=true'
+            }
+        }
+        
+        
+        stage('Push to Nexus') {
+            steps {
+                withMaven(globalMavenSettingsConfig: 'maven-global', jdk: 'jdk17', maven: 'maven3', mavenSettingsConfig: '', traceability: true) {
+                  sh 'mvn deploy -DskipTests=true'
+}
+            }
+        }
+        
+        
+        stage('6') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+        
+        
+        stage('7') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+}
